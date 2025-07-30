@@ -187,7 +187,6 @@ export default function Pse(){
     const [tipoUsuario, setTipoUsuario] = useState("natural")
     const {banco} = useSelector(state => state.usuario)
     const handlerTipoUsuario = (value)=> setTipoUsuario(value)
-    console.log(banco);
     
     useEffect(()=>{
         if (!banco) {

