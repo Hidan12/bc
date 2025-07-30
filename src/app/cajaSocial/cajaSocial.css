@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+
+@font-face {
+  font-family: 'cajaSocial';
+  src: url('/fonts/cajaSocial/cajaSocial.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+body {
+  font-family: 'cajaSocial', sans-serif;
+}

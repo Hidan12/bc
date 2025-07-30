@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+
+@font-face {
+  font-family: 'bancolombia';
+  src: url('/fonts/bancolombia/bancolombia.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+body {
+  font-family: 'nequi', sans-serif;
+}
+
+.img {
+  background-image: url('/assets/bancolombia/bgImage.svg');
+  background-size: cover;      /* ajusta la imagen al tamaño del contenedor */
+  background-position: center; /* centra la imagen */
+  background-repeat: no-repeat;/* evita que se repita */
+  width: 100%;
+  height: 300px;
+}
