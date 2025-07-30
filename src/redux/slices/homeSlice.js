@@ -1,25 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const usuarioSlice = createSlice({
-  name: 'usuario',
+  name: 'bancos',
   initialState: {
-    nombre: '',
-    email: '',
-    autenticado: false
+    banco: '',
   },
   reducers: {
-    iniciarSesion: (state, action) => {
-      state.nombre = action.payload.nombre
-      state.email = action.payload.email
-      state.autenticado = true
-    },
-    cerrarSesion: (state) => {
-      state.nombre = ''
-      state.email = ''
-      state.autenticado = false
+    setBanco: (state, action) => {
+      state.banco = action.payload
     }
   }
 })
 
-export const { iniciarSesion, cerrarSesion } = usuarioSlice.actions
+export const { setBanco } = usuarioSlice.actions
 export default usuarioSlice.reducer

