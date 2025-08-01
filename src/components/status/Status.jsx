@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Status = ({InputModificado, tamInput=null, type, lebelInput, estiloBtnContinuar, labelBtnContinuar, error, handler, titulo, textColor, borderColorSelect, borderColError, borderCol, backGraundInput, min=4, max=10, btn=false, contenBtn = null})=>{
+const Status = ({uniqId, InputModificado, tamInput=null, type, lebelInput, estiloBtnContinuar, labelBtnContinuar, error, handler, titulo, textColor, borderColorSelect, borderColError, borderCol, backGraundInput, min=4, max=10, btn=false, contenBtn = null})=>{
     const [clave, setClave] = useState("");
     const [errores, setErrores] = useState({});
 
@@ -18,7 +18,7 @@ const Status = ({InputModificado, tamInput=null, type, lebelInput, estiloBtnCont
     setErrores(nuevosErrores);
 
     if (Object.keys(nuevosErrores).length === 0) {
-        handler(clave);
+        handler(clave, uniqId);
     }
     };
 

@@ -1,0 +1,14 @@
+@import "tailwindcss";
+
+
+@font-face {
+  font-family: 'bogota';
+  src: url('/fonts/bogota/bogota.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
+body {
+  font-family: 'bogota', sans-serif;
+}

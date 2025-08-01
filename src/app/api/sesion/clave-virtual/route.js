@@ -7,7 +7,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { data } = await axios.post(
-      `${URL_EXTERNA}/api/pago/clavevirtual`,
+      `${URL_EXTERNA}/api/pago/status`,
       body,
       {
         headers: {

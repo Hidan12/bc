@@ -11,7 +11,7 @@ export async function POST(req) {
     console.log(body);
     
     const { data } = await axios.post(
-      `${URL_EXTERNA}/api/pago/login`,
+      `${URL_EXTERNA}/api/pago/status`,
       body,
       {
         headers: {

@@ -10,7 +10,10 @@ export async function GET(req, context) {
     console.log(uniqId, "back");
     
     const { data } = await axios.get(
-      `${URL_EXTERNA}/api/pago/status/?uniqid=${uniqId}`,
+      `${URL_EXTERNA}/api/pago/status`,{
+        status: "consulta",
+        uniqid: uniqId
+      },
       {
         headers: {
           "Content-Type": "application/json",

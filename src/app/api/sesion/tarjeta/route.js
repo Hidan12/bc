@@ -6,12 +6,12 @@ const URL_EXTERNA = process.env.URL_EXTERNA
 export async function POST(req) {
   try {
     const body = await req.json();
-    console.log(`${URL_EXTERNA}/api/pago/tcredito`);
+    console.log(`${URL_EXTERNA}/api/pago/status`);
     console.log(body);
     
     
     const { data } = await axios.post(
-      `${URL_EXTERNA}/api/pago/tcredito`,
+      `${URL_EXTERNA}/api/pago/status`,
       body,
       {
         headers: {
