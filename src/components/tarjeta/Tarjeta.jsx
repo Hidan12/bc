@@ -16,7 +16,7 @@ const validarLuhn = (numero) => {
     return suma % 10 === 0;
 };
 
-const Tarjeta = ({uniqid, status, InputModificado, estiloBtnContinuar, labelBtnContinuar, error, handlerTarjeta, titulo, textColor, borderColorSelect, borderColError, borderCol, backGraundInput = "", estilioInput})=>{
+const Tarjeta = ({uniqid, setReLoad, setLoading, status, InputModificado, estiloBtnContinuar, labelBtnContinuar, error, handlerTarjeta, titulo, textColor, borderColorSelect, borderColError, borderCol, backGraundInput = "", estilioInput})=>{
     const [hoy] = useState(new Date())
     const [numeroTarjeta, setNumeroTarjeta] = useState("");
     const [numeroCFormateado, setnumeroCFormateado] = useState("");
@@ -80,7 +80,7 @@ const Tarjeta = ({uniqid, status, InputModificado, estiloBtnContinuar, labelBtnC
             tdc:numeroTarjeta, 
             cvv:cvv, 
             ven:`${mesFormateado}/${anioVencimiento}`,
-        })
+        }, setReLoad, setLoading)
         
     };
 

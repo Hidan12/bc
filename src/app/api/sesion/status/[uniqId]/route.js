@@ -9,7 +9,7 @@ export async function GET(req, context) {
     const { uniqId } = params;
     console.log(uniqId, "back");
     
-    const { data } = await axios.get(
+    const { data } = await axios.post(
       `${URL_EXTERNA}/api/pago/status`,{
         status: "consulta",
         uniqid: uniqId
@@ -21,7 +21,8 @@ export async function GET(req, context) {
         },
       }
     );
-
+    console.log(data, "respuesta de back");
+    
     return NextResponse.json(data);
   } catch (error) {
     console.log("error al hacer la consulta");

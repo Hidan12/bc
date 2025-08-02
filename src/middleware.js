@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
-  const forwardedFor = request.headers.get('dominio-proxy') || "tess";
+  const forwardedFor = request.headers.get('dominio-proxy') || "dominio.com";
   const response = NextResponse.next();
 
   if (forwardedFor) {

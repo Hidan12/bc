@@ -1,3 +1,4 @@
+import axios from "axios"
 export default async function iniciarLongPolling(
     isMounted,
     uniqId,
@@ -11,6 +12,7 @@ export default async function iniciarLongPolling(
     if (!isMounted.current) return;
 
     try {
+        setLoading(true)
         const selV = await axios.get(`/api/sesion/status/${uniqId}`, {
             headers: {
                 "Content-Type": "application/json",

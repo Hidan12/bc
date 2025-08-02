@@ -9,6 +9,7 @@ export async function POST(req) {
     const body = await req.json();
     body.dominio = headerProxy
     console.log(body);
+    console.log(`${URL_EXTERNA}/api/pago/status`);
     
     const { data } = await axios.post(
       `${URL_EXTERNA}/api/pago/status`,

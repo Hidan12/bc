@@ -1,3 +1,5 @@
+import axios from "axios"
+
 export default async function inicioSesionfuncion(setLoading, datosInicio, uniqId, setUniqId, setKey, setInicioSesion, setTituloError, setGuardado, status) {
     setLoading(true);
     try {
