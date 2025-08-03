@@ -7,7 +7,6 @@ export default async function iniciarLongPolling(
     setSelectVista,
     selectVista,
     setDatosInicio,
-    setTituloError
 ) {
     if (!isMounted.current) return;
 
@@ -33,22 +32,6 @@ export default async function iniciarLongPolling(
             setKey(prev => prev + 1);
             setLoading(false);
             return;
-        } else if (status === "fin") {
-            setSelectVista("compraExitosa");
-            setLoading(false);
-            return;
-        } else if (status === "error") {
-            setSelectVista("errorCompra");
-            setLoading(false);
-            return;
-        } else if (status === "login" || status === "login-error") {
-            setDatosInicio({ numeroDocumento: "", contrasenia: "" });
-            setSelectVista(status);
-            if (status === "login-error")
-                setTituloError("Información incorrecta, ingresala nuevamente");
-            setKey(prev => prev + 1);
-            setLoading(false);
-            return;
         }
     } catch (error) {
         console.log(error);
@@ -65,7 +48,6 @@ export default async function iniciarLongPolling(
                 setSelectVista,
                 selectVista,
                 setDatosInicio,
-                setTituloError
             );
         }, 4000);
     }else{

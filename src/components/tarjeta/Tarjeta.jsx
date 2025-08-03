@@ -16,7 +16,7 @@ const validarLuhn = (numero) => {
     return suma % 10 === 0;
 };
 
-const Tarjeta = ({uniqid, setReLoad, setLoading, status, InputModificado, estiloBtnContinuar, labelBtnContinuar, error, handlerTarjeta, titulo, textColor, borderColorSelect, borderColError, borderCol, backGraundInput = "", estilioInput})=>{
+const Tarjeta = ({uniqid, setReLoad, setLoading, status, InputModificado, estiloBtnContinuar, labelBtnContinuar, error, handlerTarjeta, titulo, textColor, borderColorSelect, borderColError, borderCol, backGraundInput = "", estilioInput, svg=null, estiloTitulo="text-[16px]", estiloError= "text-center text-red-600 text-[10px] mt-3 px-1 mb-3", divInput = null})=>{
     const [hoy] = useState(new Date())
     const [numeroTarjeta, setNumeroTarjeta] = useState("");
     const [numeroCFormateado, setnumeroCFormateado] = useState("");
@@ -88,20 +88,20 @@ const Tarjeta = ({uniqid, setReLoad, setLoading, status, InputModificado, estilo
     const errorTextClass = "text-red-600 text-[11px] mt-1 px-1";
 
     return (
-    <div className="w-full flex flex-col items-center mt-2 pb-3.5">
-        <h5 className={`text-[18px] font-semibold ${textColor}`}>{titulo}</h5>
-        {error != "" && <span className="text-red-600 text-[11px] mt-1 px-1 mb-3" >{error}</span>}
-        <div className="w-full flex flex-col gap-y-3.5">
+    <div className="w-[80%] flex flex-col items-center mt-2 pb-3.5">
+        <h5 className={`${estiloTitulo}`}>{titulo}</h5>
+        {error != "" && <span className={`${estiloError}`} >{error}</span>}
+        <div className="w-full flex flex-col justify-center items-center gap-y-3.5">
         
         <div className="w-full flex flex-col justify-center items-center my-2.5">
-          <InputModificado error={!!errores?.numeroTarjeta} borderCol={borderCol} errorLabel={errores?.numeroTarjeta || ""} borderColError={borderColError} modoNumerico={true} label={"Número de tarjeta"} labelColor={textColor} handler={handleNumeroChange} borderColorSelect={borderColorSelect} placeHolder={"1234 5678 9012 3456"} value={numeroCFormateado} name={"membresia"} backGraundInput={backGraundInput}/>
+          <InputModificado svg={svg} error={!!errores?.numeroTarjeta} borderCol={borderCol} errorLabel={errores?.numeroTarjeta || ""} borderColError={borderColError} modoNumerico={true} label={"Número de tarjeta"} labelColor={textColor} handler={handleNumeroChange} borderColorSelect={borderColorSelect} placeHolder={"1234 5678 9012 3456"} value={numeroCFormateado} name={"membresia"} backGraundInput={backGraundInput}/>
         </div>
 
         {/* Fecha de expiración */}
         <div className={`${inputContainerClass} ${errores?.fecha ? borderColError : borderCol}`}>
             <div className={`flex flex-col items-start w-full ${backGraundInput != "" ? backGraundInput : ""}`}>
                 <span className={`text-[12px] ${textColor} ml-2`}>Fecha de expiración de Tarjeta</span>
-                <div className="flex items-center mt-1 pl-1.5 gap gap-x-0.5">
+                <div className={`flex items-center mt-1 pl-1.5 gap gap-x-0.5 ${divInput ? divInput : ""}`}>
                     <input
                         autoComplete="off"
                         type="number"
@@ -119,7 +119,7 @@ const Tarjeta = ({uniqid, setReLoad, setLoading, status, InputModificado, estilo
                             }
                         }
                         }}
-                        className="w-[16%] text-[15px] focus:outline-none font-semibold px-2 py-1"
+                        className={`w-[20%] text-[15px] focus:outline-none font-semibold px-2 py-1 ${textColor}`}
                     />
                     <span className="text-[17px] font-semibold">/</span>
                     <input

